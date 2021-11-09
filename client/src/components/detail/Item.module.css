@@ -1,0 +1,17 @@
+.root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.actionContainer {
+  position: relative;
+  display: flex;
+  margin-top: 10px;
+  width: 100%;
+  justify-content: end;
+}
+
+.customTextfield {
+  margin-bottom: 10px;
+}

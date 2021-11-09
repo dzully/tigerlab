@@ -1,0 +1,15 @@
+.root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  text-transform: capitalize;
+  font-weight: bold;
+}
+
+.subtitle {
+  text-transform: capitalize;
+  color: gray;
+}
