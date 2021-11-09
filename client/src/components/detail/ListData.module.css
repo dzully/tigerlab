@@ -1,0 +1,11 @@
+.root {
+  position: relative;
+  display: flex;
+}
+
+.listItem {
+  background-color: gainsboro;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  padding: 10px;
+}

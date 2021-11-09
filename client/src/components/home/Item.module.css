@@ -6,3 +6,7 @@
 .listItemButton {
   border-radius: 10px;
 }
+
+.endTitle {
+  color: gray;
+}

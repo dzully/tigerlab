@@ -14,12 +14,12 @@ export interface listApiTestProps {
 
 export interface modelDataProps {
   id: string;
-  features: Array<queryProps>;
+  data: Array<queryProps>;
 }
 
 export interface ModelProps {
   id: string;
-  data: Array<modelDataProps>;
+  features: Array<modelDataProps>;
 }
 
 export interface listApiProps {
@@ -33,6 +33,7 @@ export interface initialStateProps {
   listApi: Array<listApiProps> | null;
   selectedCategory: listApiProps | null;
   selectedTest: listApiTestProps | null;
+  storageData: Array<ModelProps> | null;
 }
 
 interface actionProps {
@@ -48,17 +49,20 @@ interface mainCallbackProps {
   HANDLE_LIST_API: string;
   HANDLE_SELECTED_CATEGORY: string;
   HANDLE_SELECTED_TEST: string;
+  HANDLE_STORAGE_DATA: string;
 }
 
 const initialState: initialStateProps = {
   listApi: null,
   selectedCategory: null,
   selectedTest: null,
+  storageData: null,
 };
 
 export const Store: any = createContext(initialState);
 
 export const MainCallback: mainCallbackProps = {
+  HANDLE_STORAGE_DATA: "HANDLE_STORAGE_DATA",
   HANDLE_LIST_API: "HANDLE_LIST_API",
   HANDLE_SELECTED_CATEGORY: "HANDLE_SELECTED_CATEGORY",
   HANDLE_SELECTED_TEST: "HANDLE_SELECTED_TEST",
@@ -70,6 +74,11 @@ const reducer = (state: any, action: actionProps) => {
       return {
         ...state,
         listApi: action.value,
+      };
+    case MainCallback.HANDLE_STORAGE_DATA:
+      return {
+        ...state,
+        storageData: action.value,
       };
     case MainCallback.HANDLE_SELECTED_CATEGORY:
       return {

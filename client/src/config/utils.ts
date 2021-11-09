@@ -9,3 +9,4 @@ export const globalTheme: { primary: string; dark: string; light: string } = {
 };
 
 export const BASE_URL: string = `${process.env.REACT_APP_MAIN_LOCAL_SERVER}${process.env.REACT_APP_MAIN_API}`;
+export const appTitle: string = "tigerlab";

@@ -3,8 +3,14 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { Fragment, useContext, useEffect, useState } from "react";
 import CustomAlert, { popupProps } from "./CustomAlert";
 import { instruments } from "../config/fetch";
-import { BASE_URL } from "../config/utils";
-import { initialStateProps, listApiProps, MainCallback, Store } from "./store";
+import { appTitle, BASE_URL } from "../config/utils";
+import {
+  initialStateProps,
+  listApiProps,
+  MainCallback,
+  ModelProps,
+  Store,
+} from "./store";
 import Loading from "./Loading";
 import History from "./history";
 import Detail from "./detail";
@@ -20,7 +26,48 @@ const Navigation = () => {
   });
   const location = useLocation();
   const listApi: Array<listApiProps> | null = state?.listApi;
+  const storageData: Array<ModelProps> | null = state?.storageData;
   const selectedCategory: listApiProps | null = state?.selectedCategory;
+
+  useEffect(() => {
+    const handleInitializer = () => {
+      let model: Array<ModelProps> = [];
+      listApi?.forEach((child: listApiProps) => {
+        model = [...model, { id: child.category, features: [] }];
+      });
+      const struct: string = JSON.stringify(model);
+
+      dispatch({
+        type: MainCallback.HANDLE_STORAGE_DATA,
+        value: struct,
+      });
+      localStorage.setItem(appTitle, struct);
+    };
+
+    const handleAvailable = () => {
+      const getStorage: string = localStorage.getItem(appTitle) || "";
+      if (getStorage?.length > 0) {
+        const struct: Array<ModelProps> = JSON.parse(getStorage);
+        dispatch({
+          type: MainCallback.HANDLE_STORAGE_DATA,
+          value: struct,
+        });
+      }
+    };
+
+    const handleLocalStorage = () => {
+      const getItem: any = localStorage.getItem(appTitle);
+      if (!getItem) {
+        handleInitializer();
+      } else {
+        handleAvailable();
+      }
+    };
+
+    if (listApi && !storageData) {
+      handleLocalStorage();
+    }
+  }, [dispatch, listApi, storageData]);
 
   useEffect(() => {
     if (!listApi) {
@@ -54,8 +101,9 @@ const Navigation = () => {
       const id: string = location.pathname.split("/")[1];
       if (!selectedCategory || selectedCategory?.category !== id) {
         if (listApi && id?.length > 0) {
+          const revokeId: string = id === "services" ? "microservices" : id;
           const initItem: Array<listApiProps> = listApi?.filter(
-            (model: listApiProps) => model.category === id
+            (model: listApiProps) => model.category === revokeId
           );
 
           if (initItem?.length > 0) {

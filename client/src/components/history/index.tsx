@@ -1,9 +1,12 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import {
   initialStateProps,
   listApiProps,
   listApiTestProps,
+  MainCallback,
+  modelDataProps,
+  ModelProps,
   Store,
 } from "../store";
 import classes from "./index.module.css";
@@ -12,17 +15,81 @@ import { List } from "@mui/material";
 import Item from "../home/Item";
 import CustomButton from "./CustomButton";
 
+export interface newStructProps {
+  [key: string]: string | number;
+  name: string;
+  route: string;
+  total: number;
+}
+
 const History = () => {
-  const { state }: { state: initialStateProps } = useContext(Store);
+  const [selectedStorage, setSelectedStorage] =
+    useState<Array<newStructProps> | null>(null);
+  const { state, dispatch }: { state: initialStateProps; dispatch: any } =
+    useContext(Store);
   const location = useLocation();
   const navigate = useNavigate();
   const selectedCategory: listApiProps | null = state?.selectedCategory;
+  const storageData: Array<ModelProps> | null = state?.storageData;
+  const selectedTest: listApiTestProps | null = state?.selectedTest;
+
+  useEffect(() => {
+    if (selectedTest) {
+      dispatch({
+        type: MainCallback.HANDLE_SELECTED_TEST,
+        value: null,
+      });
+    }
+  }, [dispatch, selectedTest]);
+
+  useEffect(() => {
+    if (!selectedStorage && selectedCategory && storageData) {
+      const initItem: Array<ModelProps> = storageData.filter(
+        (model: ModelProps) => model.id === selectedCategory?.category
+      );
+
+      if (initItem) {
+        const getItem: ModelProps = initItem[0];
+        const features: Array<modelDataProps> = getItem.features;
+
+        let newStruct: Array<newStructProps> = [];
+        selectedCategory?.tests?.forEach((stModel: listApiTestProps) => {
+          features.forEach((model: modelDataProps) => {
+            if (model.id === stModel.route) {
+              const childStruct = {
+                ...stModel,
+                total: model?.data?.length || 0,
+              };
+
+              newStruct = [...newStruct, childStruct];
+            }
+          });
+
+          newStruct?.forEach((nsModel: newStructProps) => {
+            if (stModel.name !== nsModel.name) {
+              const childStruct = {
+                ...stModel,
+                total: 0,
+              };
+
+              newStruct = [...newStruct, childStruct];
+            }
+          });
+        });
+
+        const toPost: any =
+          newStruct?.length > 0 ? newStruct : selectedCategory.tests;
+        setSelectedStorage(toPost);
+      }
+    }
+  }, [selectedCategory, selectedStorage, storageData]);
 
   const handleSelected = (param: string) => {
     navigate(param);
   };
 
   const onHandleAction = () => {
+    setSelectedStorage(null);
     if (location.key === "default") {
       window.location.pathname = "/";
     } else {
@@ -39,9 +106,10 @@ const History = () => {
       />
       <nav aria-label="main item">
         <List>
-          {selectedCategory?.tests?.map(
-            (model: listApiTestProps, key: number) => (
+          {selectedStorage &&
+            selectedStorage?.map((model: newStructProps, key: number) => (
               <Item
+                withLabel
                 key={key.toString()}
                 data={model}
                 handleSelected={handleSelected}
@@ -49,8 +117,7 @@ const History = () => {
                 primaryLabel="name"
                 secondaryLabel="route"
               />
-            )
-          )}
+            ))}
         </List>
       </nav>
     </div>
