@@ -43,7 +43,12 @@ const History = () => {
   }, [dispatch, selectedTest]);
 
   useEffect(() => {
-    if (!selectedStorage && selectedCategory && storageData) {
+    if (
+      !selectedStorage &&
+      selectedCategory &&
+      storageData &&
+      typeof storageData !== "string"
+    ) {
       const initItem: Array<ModelProps> = storageData.filter(
         (model: ModelProps) => model.id === selectedCategory?.category
       );
@@ -53,6 +58,7 @@ const History = () => {
         const features: Array<modelDataProps> = getItem.features;
 
         let newStruct: Array<newStructProps> = [];
+        let checkData: Array<string> = [];
         selectedCategory?.tests?.forEach((stModel: listApiTestProps) => {
           features.forEach((model: modelDataProps) => {
             if (model.id === stModel.route) {
@@ -62,19 +68,19 @@ const History = () => {
               };
 
               newStruct = [...newStruct, childStruct];
+              checkData = [...checkData, stModel.name];
             }
           });
 
-          newStruct?.forEach((nsModel: newStructProps) => {
-            if (stModel.name !== nsModel.name) {
-              const childStruct = {
-                ...stModel,
-                total: 0,
-              };
+          if (checkData.indexOf(stModel.name) === -1) {
+            const childStruct = {
+              ...stModel,
+              total: 0,
+            };
 
-              newStruct = [...newStruct, childStruct];
-            }
-          });
+            checkData = [...checkData, stModel.name];
+            newStruct = [...newStruct, childStruct];
+          }
         });
 
         const toPost: any =

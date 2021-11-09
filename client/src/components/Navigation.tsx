@@ -39,7 +39,7 @@ const Navigation = () => {
 
       dispatch({
         type: MainCallback.HANDLE_STORAGE_DATA,
-        value: struct,
+        value: model,
       });
       localStorage.setItem(appTitle, struct);
     };

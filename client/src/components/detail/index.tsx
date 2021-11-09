@@ -47,20 +47,22 @@ const Detail = () => {
   const storageData: Array<ModelProps> | null = state?.storageData;
 
   useEffect(() => {
-    if (storageData && selectedTest && !listData) {
-      const initServices: Array<ModelProps> = storageData?.filter(
-        (model: ModelProps) => model.id === selectedCategory?.category
-      );
+    if (storageData && storageData?.length > 0 && selectedTest && !listData) {
+      if (typeof storageData !== "string") {
+        const initServices: Array<ModelProps> = storageData?.filter(
+          (model: ModelProps) => model.id === selectedCategory?.category
+        );
 
-      if (initServices?.length > 0) {
-        const getServices: ModelProps = initServices[0];
-        const getFeatures: Array<modelDataProps> = getServices.features;
+        if (initServices?.length > 0) {
+          const getServices: ModelProps = initServices[0];
+          const getFeatures: Array<modelDataProps> = getServices.features;
 
-        getFeatures.forEach((gfStruct: modelDataProps) => {
-          if (gfStruct.id === selectedTest.route) {
-            setListData(gfStruct);
-          }
-        });
+          getFeatures.forEach((gfStruct: modelDataProps) => {
+            if (gfStruct.id === selectedTest.route) {
+              setListData(gfStruct);
+            }
+          });
+        }
       }
     }
   }, [listData, selectedCategory?.category, selectedTest, storageData]);
