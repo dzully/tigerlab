@@ -1,0 +1,9 @@
+{
+  "license": "UNLICENSED",
+  "scripts": {
+    "mock": "node_modules/.bin/json-server --watch ./mock/db.js --config ./mock/config.json"
+  },
+  "dependencies": {
+    "json-server": "0.17.0"
+  }
+}
